@@ -1,0 +1,179 @@
+# PlantRestrictions Configuration
+# Ограничение посадки растений по королевствам
+
+# Режим отладки
+debug: false
+
+# Сообщения
+messages:
+  no-permission: "&cУ вашего королевства нет права сажать это растение!"
+  no-kingdom: "&cВы не принадлежите ни к одному королевству!"
+  reload-success: "&aКонфигурация PlantRestrictions перезагружена!"
+  list-header: "&6=== Разрешённые растения для %kingdom% ==="
+  list-item: "&7- &a%plant%"
+  list-empty: "&7Нет разрешённых растений"
+  no-permission-cmd: "&cУ вас нет прав на эту команду!"
+
+# Разрешённые растения для каждого королевства
+# Используйте Material названия из Bukkit API
+# https://jd.papermc.io/paper/1.21.11/org/bukkit/Material.html
+
+kingdoms:
+  # Снежное королевство - хвойные деревья, ягоды, морозостойкие растения
+  snow_kingdom:
+    allowed-plants:
+      # Саженцы деревьев
+      #- OAK_SAPLING
+      - SPRUCE_SAPLING
+      #- BIRCH_SAPLING
+      #- JUNGLE_SAPLING
+      #- ACACIA_SAPLING
+      #- DARK_OAK_SAPLING
+      #- CHERRY_SAPLING
+      #- MANGROVE_PROPAGULE
+      #- PALE_OAK_SAPLING
+      #
+      # Семена и посевы
+      #- WHEAT_SEEDS
+      #- BEETROOT_SEEDS
+      #- MELON_SEEDS
+      #- PUMPKIN_SEEDS
+      #
+      # Овощи, которые сажаются напрямую
+      #- POTATO
+      #- CARROT
+      #
+      # Другие растения
+      #- COCOA_BEANS
+      #- SUGAR_CANE
+      #- CACTUS
+      #- BAMBOO_SAPLING
+      #- SWEET_BERRIES
+      #- GLOW_BERRIES
+      #- NETHER_WART
+      #- CHORUS_FLOWER
+      #
+      # Грибы
+      #- BROWN_MUSHROOM
+      #- RED_MUSHROOM
+      #- CRIMSON_FUNGUS
+      #- WARPED_FUNGUS
+      #
+      # Высокие растения
+      #- SUNFLOWER
+      #- LILAC
+      #- ROSE_BUSH
+      #- PEONY
+      #
+      # Азалии
+      #- AZALEA
+      #- FLOWERING_AZALEA
+
+  # Лесное королевство - лиственные деревья, разнообразие растений
+  forest_kingdom:
+    allowed-plants:
+      # Саженцы деревьев
+      - OAK_SAPLING
+      #- SPRUCE_SAPLING
+      #- BIRCH_SAPLING
+      #- JUNGLE_SAPLING
+      #- ACACIA_SAPLING
+      #- DARK_OAK_SAPLING
+      #- CHERRY_SAPLING
+      #- MANGROVE_PROPAGULE
+      #- PALE_OAK_SAPLING
+      #
+      # Семена и посевы
+      #- WHEAT_SEEDS
+      #- BEETROOT_SEEDS
+      #- MELON_SEEDS
+      #- PUMPKIN_SEEDS
+      #
+      # Овощи, которые сажаются напрямую
+      #- POTATO
+      #- CARROT
+      #
+      # Другие растения
+      #- COCOA_BEANS
+      #- SUGAR_CANE
+      #- CACTUS
+      #- BAMBOO_SAPLING
+      #- SWEET_BERRIES
+      #- GLOW_BERRIES
+      #- NETHER_WART
+      #- CHORUS_FLOWER
+      #
+      # Грибы
+      #- BROWN_MUSHROOM
+      #- RED_MUSHROOM
+      #- CRIMSON_FUNGUS
+      #- WARPED_FUNGUS
+      #
+      # Высокие растения
+      #- SUNFLOWER
+      #- LILAC
+      #- ROSE_BUSH
+      #- PEONY
+      #
+      # Азалии
+      #- AZALEA
+      #- FLOWERING_AZALEA
+
+  # Тропическое королевство - джунглевые растения, экзотика
+  tropical_kingdom:
+    allowed-plants:
+      # Саженцы деревьев
+      #- OAK_SAPLING
+      #- SPRUCE_SAPLING
+      #- BIRCH_SAPLING
+      - JUNGLE_SAPLING
+      #- ACACIA_SAPLING
+      #- DARK_OAK_SAPLING
+      #- CHERRY_SAPLING
+      #- MANGROVE_PROPAGULE
+      #- PALE_OAK_SAPLING
+      #
+      # Семена и посевы
+      #- WHEAT_SEEDS
+      #- BEETROOT_SEEDS
+      #- MELON_SEEDS
+      #- PUMPKIN_SEEDS
+      #
+      # Овощи, которые сажаются напрямую
+      #- POTATO
+      #- CARROT
+      #
+      # Другие растения
+      #- COCOA_BEANS
+      #- SUGAR_CANE
+      #- CACTUS
+      #- BAMBOO_SAPLING
+      #- SWEET_BERRIES
+      #- GLOW_BERRIES
+      #- NETHER_WART
+      #- CHORUS_FLOWER
+      #
+      # Грибы
+      #- BROWN_MUSHROOM
+      #- RED_MUSHROOM
+      #- CRIMSON_FUNGUS
+      #- WARPED_FUNGUS
+      #
+      # Высокие растения
+      #- SUNFLOWER
+      #- LILAC
+      #- ROSE_BUSH
+      #- PEONY
+      #
+      # Азалии
+      #- AZALEA
+      #- FLOWERING_AZALEA
+
+# Глобально разрешённые растения (для всех королевств)
+global-allowed:
+  - WHEAT_SEEDS           # Пшеница доступна всем
+
+# Игроки без королевства
+# true = могут сажать только global-allowed
+# false = могут сажать всё (не рекомендуется)
+restrict-teamless: false

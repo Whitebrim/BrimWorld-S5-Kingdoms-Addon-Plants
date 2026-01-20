@@ -1,0 +1,36 @@
+name: PlantRestrictions
+version: ${project.version}
+main: gg.brim.plantrestrictions.PlantRestrictions
+api-version: '1.21'
+folia-supported: true
+description: Ограничение посадки растений по королевствам
+
+depend:
+  - KingdomsAddon
+
+authors:
+  - Brim
+
+commands:
+  plantrestrictions:
+    description: Управление плагином PlantRestrictions
+    aliases: [pr, plants]
+    usage: /<command> <reload|list>
+
+permissions:
+  plantrestrictions.admin:
+    description: Полный доступ к PlantRestrictions
+    default: op
+    children:
+      plantrestrictions.reload: true
+      plantrestrictions.bypass: true
+      plantrestrictions.info: true
+  plantrestrictions.reload:
+    description: Перезагрузка конфигурации
+    default: op
+  plantrestrictions.bypass:
+    description: Обход ограничений на посадку
+    default: op
+  plantrestrictions.info:
+    description: Просмотр информации о разрешённых растениях
+    default: true
