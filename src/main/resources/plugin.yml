@@ -1,6 +1,6 @@
 name: PlantRestrictions
 version: ${project.version}
-main: gg.brim.plantrestrictions.PlantRestrictions
+main: su.brim.plantrestrictions.PlantRestrictions
 api-version: '1.21'
 folia-supported: true
 description: Ограничение посадки растений по королевствам

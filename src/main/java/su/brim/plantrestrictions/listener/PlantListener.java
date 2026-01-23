@@ -1,8 +1,8 @@
-package gg.brim.plantrestrictions.listener;
+package su.brim.plantrestrictions.listener;
 
-import gg.brim.kingdoms.api.KingdomsAPI;
-import gg.brim.plantrestrictions.PlantRestrictions;
-import gg.brim.plantrestrictions.manager.PlantManager;
+import su.brim.kingdoms.api.KingdomsAPI;
+import su.brim.plantrestrictions.PlantRestrictions;
+import su.brim.plantrestrictions.manager.PlantManager;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;

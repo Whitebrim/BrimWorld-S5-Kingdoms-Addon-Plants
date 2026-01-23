@@ -1,6 +1,6 @@
-package gg.brim.plantrestrictions;
+package su.brim.plantrestrictions;
 
-import gg.brim.kingdoms.api.KingdomsAPI;
+import su.brim.kingdoms.api.KingdomsAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;

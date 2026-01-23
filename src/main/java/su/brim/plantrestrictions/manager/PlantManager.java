@@ -1,6 +1,6 @@
-package gg.brim.plantrestrictions.manager;
+package su.brim.plantrestrictions.manager;
 
-import gg.brim.plantrestrictions.PlantRestrictions;
+import su.brim.plantrestrictions.PlantRestrictions;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;

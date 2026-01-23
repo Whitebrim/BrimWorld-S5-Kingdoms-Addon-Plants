@@ -1,6 +1,6 @@
-package gg.brim.plantrestrictions.config;
+package su.brim.plantrestrictions.config;
 
-import gg.brim.plantrestrictions.PlantRestrictions;
+import su.brim.plantrestrictions.PlantRestrictions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;

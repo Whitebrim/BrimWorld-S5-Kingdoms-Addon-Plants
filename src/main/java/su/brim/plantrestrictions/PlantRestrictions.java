@@ -1,9 +1,9 @@
-package gg.brim.plantrestrictions;
+package su.brim.plantrestrictions;
 
-import gg.brim.kingdoms.api.KingdomsAPI;
-import gg.brim.plantrestrictions.config.ConfigManager;
-import gg.brim.plantrestrictions.listener.PlantListener;
-import gg.brim.plantrestrictions.manager.PlantManager;
+import su.brim.kingdoms.api.KingdomsAPI;
+import su.brim.plantrestrictions.config.ConfigManager;
+import su.brim.plantrestrictions.listener.PlantListener;
+import su.brim.plantrestrictions.manager.PlantManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class PlantRestrictions extends JavaPlugin {
