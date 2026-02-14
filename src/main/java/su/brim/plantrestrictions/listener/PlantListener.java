@@ -5,20 +5,25 @@ import su.brim.plantrestrictions.PlantRestrictions;
 import su.brim.plantrestrictions.manager.PlantManager;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Ageable;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 /**
  * Слушатель событий посадки растений.
- * В Folia события вызываются в регионе игрока, поэтому
+ * В Folia события вызываются в регионе игрока/сущности, поэтому
  * дополнительная синхронизация не требуется.
  */
 public class PlantListener implements Listener {
@@ -78,8 +83,17 @@ public class PlantListener implements Listener {
     }
 
     /**
-     * Обработка взаимодействия (посадка семян в землю)
-     * Семена сажаются через правый клик по земле, а не через BlockPlaceEvent
+     * Обработка взаимодействия (посадка семян в землю).
+     * Семена сажаются через правый клик по земле, а не через BlockPlaceEvent.
+     * 
+     * Обрабатываем ОБЕ руки — ранее проверялась только главная рука,
+     * что позволяло обойти ограничение через вторую руку (off-hand).
+     * 
+     * Не используем проверку canPlantOn — ранее при клике по соседнему
+     * блоку/растению проверка не срабатывала, и посадка проходила.
+     * Достаточно проверять, что игрок держит семена/растение: если ему
+     * запрещено сажать, блокируем взаимодействие, а Minecraft сам не даст
+     * посадить в невалидное место.
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -88,15 +102,18 @@ public class PlantListener implements Listener {
             return;
         }
 
-        // Только главная рука (избегаем двойной обработки)
-        if (event.getHand() != EquipmentSlot.HAND) {
+        Player player = event.getPlayer();
+        EquipmentSlot hand = event.getHand();
+        if (hand == null) {
             return;
         }
 
-        Player player = event.getPlayer();
-        ItemStack item = event.getItem();
+        // Получаем предмет из той руки, которой произведён клик
+        ItemStack item = (hand == EquipmentSlot.HAND) 
+                ? player.getInventory().getItemInMainHand() 
+                : player.getInventory().getItemInOffHand();
 
-        if (item == null) {
+        if (item == null || item.getType() == Material.AIR) {
             return;
         }
 
@@ -112,14 +129,9 @@ public class PlantListener implements Listener {
             return;
         }
 
-        // Проверяем, можно ли посадить на этот блок
-        if (!canPlantOn(clickedBlock, material)) {
-            return;
-        }
-
         // Проверяем bypass право
         if (player.hasPermission("plantrestrictions.bypass")) {
-            plugin.debug("Игрок " + player.getName() + " имеет bypass право (interact)");
+            plugin.debug("Игрок " + player.getName() + " имеет bypass право (interact, hand=" + hand + ")");
             return;
         }
 
@@ -144,8 +156,109 @@ public class PlantListener implements Listener {
 
             plugin.debug("Заблокирована посадка семян " + material.name() + 
                     " игроком " + player.getName() + 
+                    " (рука: " + hand + ", королевство: " + kingdomId + ")");
+        }
+    }
+
+    /**
+     * Блокируем передачу запрещённых семян жителям.
+     * Жители (Farmer) могут сажать полученные семена/овощи самостоятельно,
+     * обходя ограничения посадки для игрока.
+     * 
+     * В Folia событие вызывается в регионе целевой сущности (жителя).
+     */
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        Entity rightClicked = event.getRightClicked();
+        if (!(rightClicked instanceof Villager)) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        EquipmentSlot hand = event.getHand();
+
+        // Получаем предмет из руки, которой кликнули по жителю
+        ItemStack item = (hand == EquipmentSlot.HAND)
+                ? player.getInventory().getItemInMainHand()
+                : player.getInventory().getItemInOffHand();
+
+        if (item == null || item.getType() == Material.AIR) {
+            return;
+        }
+
+        Material material = item.getType();
+
+        // Проверяем только семена/овощи, которые житель может посадить
+        if (!isVillagerPlantable(material)) {
+            return;
+        }
+
+        // Проверяем bypass право
+        if (player.hasPermission("plantrestrictions.bypass")) {
+            plugin.debug("Игрок " + player.getName() + " имеет bypass право (villager give)");
+            return;
+        }
+
+        // Проверяем админа KingdomsAddon
+        if (kingdomsAPI.isAdmin(player)) {
+            plugin.debug("Игрок " + player.getName() + " является админом KingdomsAddon (villager give)");
+            return;
+        }
+
+        // Получаем королевство игрока
+        String kingdomId = kingdomsAPI.getPlayerKingdom(player.getUniqueId());
+
+        // Проверяем разрешение
+        if (!plantManager.canPlant(kingdomId, material)) {
+            event.setCancelled(true);
+
+            if (kingdomId == null) {
+                player.sendMessage(plugin.getConfigManager().getNoKingdomMessage());
+            } else {
+                player.sendMessage(plugin.getConfigManager().getNoPermissionMessage());
+            }
+
+            plugin.debug("Заблокирована передача " + material.name() + 
+                    " жителю игроком " + player.getName() + 
                     " (королевство: " + kingdomId + ")");
         }
+    }
+
+    /**
+     * Дополнительная защита: блокируем посадку растений жителями.
+     * Это страхующий обработчик на случай, если житель уже имеет семена
+     * в инвентаре (например, подобрал с земли или получил при торговле).
+     * 
+     * В Folia EntityChangeBlockEvent вызывается в регионе блока.
+     */
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Villager)) {
+            return;
+        }
+
+        Material toMaterial = event.getBlockData().getMaterial();
+
+        // Проверяем, является ли новый блок растением
+        // Жители сажают: пшеницу, картофель, морковь, свёклу
+        Material seedMaterial = cropBlockToSeed(toMaterial);
+        if (seedMaterial == null) {
+            return;
+        }
+
+        // Проверяем, разрешено ли это растение глобально
+        if (plantManager.canPlant(null, seedMaterial) && 
+                !plugin.getConfigManager().isRestrictTeamless()) {
+            // Если для бескоролевственных разрешено и растение глобально доступно — пропускаем
+            return;
+        }
+
+        // Блокируем посадку жителем — мы не можем определить,
+        // к какому королевству принадлежит житель
+        event.setCancelled(true);
+        plugin.debug("Заблокирована посадка " + toMaterial.name() + 
+                " жителем на " + event.getBlock().getLocation());
     }
 
     /**
@@ -168,44 +281,30 @@ public class PlantListener implements Listener {
     }
 
     /**
-     * Проверяет, можно ли посадить данный материал на указанный блок
+     * Материалы, которые житель может получить и посадить
      */
-    private boolean canPlantOn(Block block, Material plantMaterial) {
-        Material blockType = block.getType();
-
-        return switch (plantMaterial) {
-            // Семена сажаются на вспаханную землю
-            case WHEAT_SEEDS, BEETROOT_SEEDS, MELON_SEEDS, PUMPKIN_SEEDS,
-                 TORCHFLOWER_SEEDS, PITCHER_POD, POTATO, CARROT -> 
-                blockType == Material.FARMLAND;
-
-            // Адский нарост на песок душ
-            case NETHER_WART -> 
-                blockType == Material.SOUL_SAND || blockType == Material.SOUL_SOIL;
-
-            // Какао на джунглевое дерево
-            case COCOA_BEANS -> 
-                blockType == Material.JUNGLE_LOG || 
-                blockType == Material.JUNGLE_WOOD ||
-                blockType == Material.STRIPPED_JUNGLE_LOG ||
-                blockType == Material.STRIPPED_JUNGLE_WOOD;
-
-            // Ягоды на землю/траву
-            case SWEET_BERRIES, GLOW_BERRIES -> 
-                isGrassOrDirt(blockType);
-
+    private boolean isVillagerPlantable(Material material) {
+        return switch (material) {
+            case WHEAT_SEEDS,
+                 BEETROOT_SEEDS,
+                 POTATO,
+                 CARROT -> true;
             default -> false;
         };
     }
 
     /**
-     * Проверяет, является ли материал землёй или травой
+     * Преобразует тип блока посева в соответствующий материал семян.
+     * Жители сажают блоки посевов (WHEAT, BEETROOTS, POTATOES, CARROTS),
+     * а в конфиге ограничения настроены на материалы семян/предметов.
      */
-    private boolean isGrassOrDirt(Material material) {
-        return switch (material) {
-            case GRASS_BLOCK, DIRT, COARSE_DIRT, ROOTED_DIRT, PODZOL, 
-                 MYCELIUM, MOSS_BLOCK, MUD, MUDDY_MANGROVE_ROOTS -> true;
-            default -> false;
+    private Material cropBlockToSeed(Material cropBlock) {
+        return switch (cropBlock) {
+            case WHEAT -> Material.WHEAT_SEEDS;
+            case BEETROOTS -> Material.BEETROOT_SEEDS;
+            case POTATOES -> Material.POTATO;
+            case CARROTS -> Material.CARROT;
+            default -> null;
         };
     }
 }
