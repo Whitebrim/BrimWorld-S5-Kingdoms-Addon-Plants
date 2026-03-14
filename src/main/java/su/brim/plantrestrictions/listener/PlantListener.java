@@ -129,6 +129,11 @@ public class PlantListener implements Listener {
             return;
         }
 
+        // Разрешаем помещать предметы в котёл (для BreweryX и т.п.)
+        if (isCauldron(clickedBlock.getType())) {
+            return;
+        }
+
         // Проверяем bypass право
         if (player.hasPermission("plantrestrictions.bypass")) {
             plugin.debug("Игрок " + player.getName() + " имеет bypass право (interact, hand=" + hand + ")");
@@ -259,6 +264,19 @@ public class PlantListener implements Listener {
         event.setCancelled(true);
         plugin.debug("Заблокирована посадка " + toMaterial.name() + 
                 " жителем на " + event.getBlock().getLocation());
+    }
+
+    /**
+     * Проверяет, является ли блок котлом (для BreweryX)
+     */
+    private boolean isCauldron(Material material) {
+        return switch (material) {
+            case CAULDRON,
+                 WATER_CAULDRON,
+                 LAVA_CAULDRON,
+                 POWDER_SNOW_CAULDRON -> true;
+            default -> false;
+        };
     }
 
     /**
