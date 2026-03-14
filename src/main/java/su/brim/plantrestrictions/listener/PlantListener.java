@@ -288,6 +288,8 @@ public class PlantListener implements Listener {
                  BEETROOT_SEEDS,
                  MELON_SEEDS,
                  PUMPKIN_SEEDS,
+                 TORCHFLOWER_SEEDS,
+                 PITCHER_POD,
                  POTATO,
                  CARROT,
                  NETHER_WART,
@@ -305,6 +307,8 @@ public class PlantListener implements Listener {
         return switch (material) {
             case WHEAT_SEEDS,
                  BEETROOT_SEEDS,
+                 TORCHFLOWER_SEEDS,
+                 PITCHER_POD,
                  POTATO,
                  CARROT -> true;
             default -> false;
@@ -322,6 +326,8 @@ public class PlantListener implements Listener {
             case BEETROOTS -> Material.BEETROOT_SEEDS;
             case POTATOES -> Material.POTATO;
             case CARROTS -> Material.CARROT;
+            case TORCHFLOWER_CROP -> Material.TORCHFLOWER_SEEDS;
+            case PITCHER_CROP -> Material.PITCHER_POD;
             default -> null;
         };
     }

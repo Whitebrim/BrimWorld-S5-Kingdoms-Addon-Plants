@@ -168,6 +168,8 @@ public class PlantManager {
         materials.add(Material.BEETROOT_SEEDS);
         materials.add(Material.MELON_SEEDS);
         materials.add(Material.PUMPKIN_SEEDS);
+        materials.add(Material.TORCHFLOWER_SEEDS);
+        materials.add(Material.PITCHER_POD);
 
         // Овощи, которые сажаются напрямую
         materials.add(Material.POTATO);
@@ -188,6 +190,21 @@ public class PlantManager {
         materials.add(Material.RED_MUSHROOM);
         materials.add(Material.CRIMSON_FUNGUS);
         materials.add(Material.WARPED_FUNGUS);
+
+        // Цветы (1.20+)
+        materials.add(Material.TORCHFLOWER);
+        materials.add(Material.PITCHER_PLANT);
+        materials.add(Material.PINK_PETALS);
+
+        // Цветы (1.21.4 — Pale Garden)
+        materials.add(Material.OPEN_EYEBLOSSOM);
+        materials.add(Material.CLOSED_EYEBLOSSOM);
+
+        // Растения (1.21.5 — Spring to Life)
+        materials.add(Material.WILDFLOWERS);
+        materials.add(Material.FIREFLY_BUSH);
+        materials.add(Material.BUSH);
+        materials.add(Material.CACTUS_FLOWER);
 
         // Высокие растения
         materials.add(Material.SUNFLOWER);
