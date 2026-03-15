@@ -129,6 +129,11 @@ public class PlantListener implements Listener {
             return;
         }
 
+        // Разрешаем помещать предметы в котёл (для BreweryX и т.п.)
+        if (isCauldron(clickedBlock.getType())) {
+            return;
+        }
+
         // Проверяем bypass право
         if (player.hasPermission("plantrestrictions.bypass")) {
             plugin.debug("Игрок " + player.getName() + " имеет bypass право (interact, hand=" + hand + ")");
@@ -262,6 +267,19 @@ public class PlantListener implements Listener {
     }
 
     /**
+     * Проверяет, является ли блок котлом (для BreweryX)
+     */
+    private boolean isCauldron(Material material) {
+        return switch (material) {
+            case CAULDRON,
+                 WATER_CAULDRON,
+                 LAVA_CAULDRON,
+                 POWDER_SNOW_CAULDRON -> true;
+            default -> false;
+        };
+    }
+
+    /**
      * Проверяет, является ли материал семенами или растением для посадки через взаимодействие
      */
     private boolean isSeedOrPlantable(Material material) {
@@ -270,6 +288,8 @@ public class PlantListener implements Listener {
                  BEETROOT_SEEDS,
                  MELON_SEEDS,
                  PUMPKIN_SEEDS,
+                 TORCHFLOWER_SEEDS,
+                 PITCHER_POD,
                  POTATO,
                  CARROT,
                  NETHER_WART,
@@ -287,6 +307,8 @@ public class PlantListener implements Listener {
         return switch (material) {
             case WHEAT_SEEDS,
                  BEETROOT_SEEDS,
+                 TORCHFLOWER_SEEDS,
+                 PITCHER_POD,
                  POTATO,
                  CARROT -> true;
             default -> false;
@@ -304,6 +326,8 @@ public class PlantListener implements Listener {
             case BEETROOTS -> Material.BEETROOT_SEEDS;
             case POTATOES -> Material.POTATO;
             case CARROTS -> Material.CARROT;
+            case TORCHFLOWER_CROP -> Material.TORCHFLOWER_SEEDS;
+            case PITCHER_CROP -> Material.PITCHER_POD;
             default -> null;
         };
     }
